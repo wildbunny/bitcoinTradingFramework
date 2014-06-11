@@ -61,7 +61,6 @@
     <Compile Include="HuobiSyncWebRequest.cs" />
     <Compile Include="HuobiTypes.cs" />
     <Compile Include="Numerical.cs" />
-    <Compile Include="Official.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RestHelpers.cs" />
     <Compile Include="SynchronousJsonWebRequest.cs" />
