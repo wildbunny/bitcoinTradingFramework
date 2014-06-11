@@ -19,7 +19,7 @@ namespace bitcoinTradingFramework
 			// attach graph renderer
 			Rendering renderer = new Rendering(800, 400);
 			long lastTradeId = -1;
-			Huobi huobi = new Huobi("afa926c0-b8657993-b0aa12eb-520a5", "19a94dc7-fa997538-ecd26f1f-5a453");
+			Huobi huobi = new Huobi(Insert your access key here, Insert your secret key here);
 			AlgoBase alogo = new NaiveMarketMaker(huobi, HuobiMarket.btc, renderer);
 			BcwTrade lastTrade = null;
 			TimeSpan timeOffset = new TimeSpan();
