@@ -44,7 +44,9 @@ namespace bitcoinTradingFramework.Algorithms
 			decimal totalBtcValueStart = m_startInfo.m_TotalCny / midPrice + m_startInfo.m_TotalBtc;
 			decimal totalBtcValueNow = infoNow.m_TotalCny / midPrice + infoNow.m_TotalBtc;
 
-			decimal profitPercent = 100*(totalBtcValueNow - totalBtcValueStart) / totalBtcValueStart;
+		    decimal profitPercent = totalBtcValueStart > 0
+		        ? 100*(totalBtcValueNow - totalBtcValueStart)/totalBtcValueStart
+		        : 0;
 
 			Console.WriteLine("profit % = " + profitPercent);
 
