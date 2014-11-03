@@ -76,7 +76,8 @@ namespace HuobiApi
 		bitstampbtcusd,
 		btcebtcusd,
 		btceltcbtc,
-		btceltcusd
+		btceltcusd,
+        bitfinexbtcusd
 	}
 
 	public class BcwTrade
