@@ -12,7 +12,7 @@ namespace bitcoinTradingFramework.Algorithms
         /// <param name="huobi"></param>
         /// <param name="market"></param>
         /// <param name="renderer"></param>
-        public NaiveMarketMaker(Huobi huobi, HuobiMarket market, Rendering renderer) : base(huobi, market, renderer)
+        public NaiveMarketMaker(IMarket huobi, HuobiMarket market, Rendering renderer) : base(huobi, market, renderer)
         {
         }
 
