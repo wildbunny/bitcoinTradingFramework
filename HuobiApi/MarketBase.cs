@@ -7,7 +7,7 @@ using System.Web;
 
 namespace HuobiApi
 {
-    public class MarketBase : IMarket
+    public abstract class MarketBase : IMarket
     {
         protected readonly string m_accessKey;
         protected readonly string m_secretKey;
@@ -48,65 +48,24 @@ namespace HuobiApi
         /// <param name="market"></param>
         /// <param name="limit"></param>
         /// <returns></returns>
-        public List<BcwTrade> GetPublicTrades(BcwMarket market, long sinceTid = -1)
-        {
-            string query;
-            if (sinceTid == -1)
-            {
-                query = RestHelpers.BuildGetArgs("symbol", market.ToString());
-            }
-            else
-            {
-                query = RestHelpers.BuildGetArgs("symbol", market.ToString(), "since", sinceTid);
-            }
-            var request = new SynchronousJsonWebRequest<List<BcwTrade>>("https://s2.bitcoinwisdom.com/trades", null,
-                Huobi.kGet, query, 10, Huobi.kRetryCount);
-
-            return request.Send();
-        }
+        public abstract List<BcwTrade> GetPublicTrades(BcwMarket market, long sinceTid = -1);
 
         /// <summary>
         /// </summary>
         /// <param name="market"></param>
         /// <returns></returns>
-        public HuobiMarketSummary GetMarketSummary(HuobiMarket market)
-        {
-            var request =
-                new SynchronousJsonWebRequest<HuobiMarketSummary>(
-                    "http://market.huobi.com/staticmarket/detail_" + market + "_json.js", null, Huobi.kGet, "", 10,
-                    Huobi.kRetryCount);
-            return request.Send();
-        }
+        public abstract HuobiMarketSummary GetMarketSummary(HuobiMarket market);
 
         /// <summary>
         /// </summary>
         /// <param name="market"></param>
         /// <returns></returns>
-        public BcwTicker GetTicker(BcwMarket market)
-        {
-            var request =
-                new SynchronousJsonWebRequest<Dictionary<BcwMarket, BcwTicker>>("https://s2.bitcoinwisdom.com/ticker",
-                    null, Huobi.kGet, "", 10, Huobi.kRetryCount);
-            return request.Send()[market];
-        }
+        public abstract BcwTicker GetTicker(BcwMarket market);
 
         /// <summary>
         /// </summary>
         /// <returns></returns>
-        public DateTime GetHuobiTime()
-        {
-            DateTime time;
-            try
-            {
-                var error = Send<HuobiError>("order_info", "id", 0);
-                time = UnixTime.ConvertToDateTime(error.time);
-            }
-            catch (HuobiException e)
-            {
-                time = UnixTime.ConvertToDateTime(e.m_error.time);
-            }
-            return time;
-        }
+        public abstract DateTime GetHuobiTime();
 
         /// <summary>
         /// </summary>

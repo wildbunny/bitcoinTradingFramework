@@ -109,5 +109,54 @@ namespace HuobiApi
 
             WildLog.Assert(amount >= kMinAmount, "Minimum tradable amount is " + kMinAmount);
         }
+
+        public override DateTime GetHuobiTime()
+        {
+            DateTime time;
+            try
+            {
+                var error = Send<HuobiError>("order_info", "id", 0);
+                time = UnixTime.ConvertToDateTime(error.time);
+            }
+            catch (HuobiException e)
+            {
+                time = UnixTime.ConvertToDateTime(e.m_error.time);
+            }
+            return time;
+        }
+
+        public override HuobiMarketSummary GetMarketSummary(HuobiMarket market)
+        {
+            var request =
+                new SynchronousJsonWebRequest<HuobiMarketSummary>(
+                    "http://market.huobi.com/staticmarket/detail_" + market + "_json.js", null, Huobi.kGet, "", 10,
+                    Huobi.kRetryCount);
+            return request.Send();
+        }
+
+        public override BcwTicker GetTicker(BcwMarket market)
+        {
+            var request =
+                new SynchronousJsonWebRequest<Dictionary<BcwMarket, BcwTicker>>("https://s2.bitcoinwisdom.com/ticker",
+                    null, Huobi.kGet, "", 10, Huobi.kRetryCount);
+            return request.Send()[market];
+        }
+
+        public override List<BcwTrade> GetPublicTrades(BcwMarket market, long sinceTid = -1)
+        {
+            string query;
+            if (sinceTid == -1)
+            {
+                query = RestHelpers.BuildGetArgs("symbol", market.ToString());
+            }
+            else
+            {
+                query = RestHelpers.BuildGetArgs("symbol", market.ToString(), "since", sinceTid);
+            }
+            var request = new SynchronousJsonWebRequest<List<BcwTrade>>("https://s2.bitcoinwisdom.com/trades", null,
+                Huobi.kGet, query, 10, Huobi.kRetryCount);
+
+            return request.Send();
+        }
     }
 }
