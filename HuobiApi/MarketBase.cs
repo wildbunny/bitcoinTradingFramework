@@ -7,26 +7,20 @@ using System.Web;
 
 namespace HuobiApi
 {
-    public class Huobi : IMarket
+    public class MarketBase : IMarket
     {
-        public const decimal kCent = 0.01M;
-        public const decimal kMinAmount = 0.001M;
-        private const string kApiRoot = "https://api.huobi.com/apiv2.php";
-        public const string kGet = "GET";
-        public const string kPost = "POST";
-        public const int kRetryCount = 10;
+        protected readonly string m_accessKey;
+        protected readonly string m_secretKey;
 
-        private readonly string m_accessKey;
-        private readonly Dictionary<string, DateTime> m_lastCalled;
-        private readonly string m_secretKey;
+        protected readonly Dictionary<string, DateTime> m_lastCalled;
 
-        private readonly double m_sleepAfterCallSeconds;
-        private TimeSpan m_timeOffset;
+        protected readonly double m_sleepAfterCallSeconds;
+        protected TimeSpan m_timeOffset;
 
         /// <summary>
         /// </summary>
         /// <param name="huobiTime"></param>
-        public Huobi(string accessKey, string secretKey, double sleepAfterCallSeconds = 1.5)
+        public MarketBase(string accessKey, string secretKey, double sleepAfterCallSeconds = 1.5)
         {
             m_accessKey = accessKey;
             m_secretKey = secretKey;
@@ -39,21 +33,13 @@ namespace HuobiApi
 
         /// <summary>
         /// </summary>
-        public TimeSpan m_HuobiTimeOffset
-        {
-            get { return m_timeOffset; }
-        }
-
-
-        /// <summary>
-        /// </summary>
         /// <param name="market"></param>
         /// <param name="limit"></param>
         /// <returns></returns>
         public BcwMarketDepth GetDepth(BcwMarket market)
         {
             var request = new SynchronousJsonWebRequest<BcwMarketDepthResult>("https://s2.bitcoinwisdom.com/depth", null,
-                kGet, RestHelpers.BuildGetArgs("symbol", market.ToString()), 10, kRetryCount);
+                Huobi.kGet, RestHelpers.BuildGetArgs("symbol", market.ToString()), 10, Huobi.kRetryCount);
             return request.Send().@return;
         }
 
@@ -74,7 +60,7 @@ namespace HuobiApi
                 query = RestHelpers.BuildGetArgs("symbol", market.ToString(), "since", sinceTid);
             }
             var request = new SynchronousJsonWebRequest<List<BcwTrade>>("https://s2.bitcoinwisdom.com/trades", null,
-                kGet, query, 10, kRetryCount);
+                Huobi.kGet, query, 10, Huobi.kRetryCount);
 
             return request.Send();
         }
@@ -87,8 +73,8 @@ namespace HuobiApi
         {
             var request =
                 new SynchronousJsonWebRequest<HuobiMarketSummary>(
-                    "http://market.huobi.com/staticmarket/detail_" + market + "_json.js", null, kGet, "", 10,
-                    kRetryCount);
+                    "http://market.huobi.com/staticmarket/detail_" + market + "_json.js", null, Huobi.kGet, "", 10,
+                    Huobi.kRetryCount);
             return request.Send();
         }
 
@@ -100,7 +86,7 @@ namespace HuobiApi
         {
             var request =
                 new SynchronousJsonWebRequest<Dictionary<BcwMarket, BcwTicker>>("https://s2.bitcoinwisdom.com/ticker",
-                    null, kGet, "", 10, kRetryCount);
+                    null, Huobi.kGet, "", 10, Huobi.kRetryCount);
             return request.Send()[market];
         }
 
@@ -178,26 +164,6 @@ namespace HuobiApi
         /// <summary>
         /// </summary>
         /// <param name="price"></param>
-        private void ValidatePrice(decimal price)
-        {
-            decimal trucated = Numerical.TruncateDecimal(price, 2);
-            WildLog.Assert(trucated == price, "Price should have 2 decimal places max");
-        }
-
-        /// <summary>
-        /// </summary>
-        /// <param name="amount"></param>
-        private void ValidateAmount(decimal amount)
-        {
-            decimal trucated = Numerical.TruncateDecimal(amount, 4);
-            WildLog.Assert(trucated == amount, "Amount should have 4 decimal places max");
-
-            WildLog.Assert(amount >= kMinAmount, "Minimum tradable amount is " + kMinAmount);
-        }
-
-        /// <summary>
-        /// </summary>
-        /// <param name="price"></param>
         /// <returns></returns>
         public static decimal NormalisePrice(decimal price)
         {
@@ -213,6 +179,8 @@ namespace HuobiApi
             return Numerical.TruncateDecimal(amount, 4);
         }
 
+
+
         /// <summary>
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -222,80 +190,25 @@ namespace HuobiApi
         /// <param name="timeOutSeconds"></param>
         /// <param name="retries"></param>
         /// <returns></returns>
-        private T2 Send<T2>(string method, params object[] args)
+        public virtual T2 Send<T2>(string method, params object[] args)
         {
-            // add some more args for authentication
-            uint seconds = UnixTime.GetFromDateTime(DateTime.UtcNow) + (uint) m_timeOffset.TotalSeconds;
+            return default(T2);
+        }
 
-            var moreArgs = new Dictionary<string, string>
-            {
-                {"created", seconds.ToString()},
-                {"access_key", m_accessKey},
-                {"method", method},
-                {"secret_key", m_secretKey}
-            };
+        /// <summary>
+        /// </summary>
+        /// <param name="price"></param>
+        private void ValidatePrice(decimal price)
+        {
+            decimal trucated = Numerical.TruncateDecimal(price, 2);
+            WildLog.Assert(trucated == price, "Price should have 2 decimal places max");
+        }
 
-            for (int i = 0; i < args.Length/2; i++)
-            {
-                moreArgs[args[i*2 + 0].ToString()] = HttpUtility.UrlEncode(args[i*2 + 1].ToString());
-            }
-
-            List<KeyValuePair<string, string>> sortedByKey = moreArgs.OrderBy(kvp => kvp.Key).ToList();
-
-            string hashArgs = RestHelpers.BuildPostArgs(sortedByKey);
-            string paramsHash = MD5(hashArgs);
-
-            sortedByKey.Add(new KeyValuePair<string, string>("sign", paramsHash));
-
-            // remove secret key from query params
-            sortedByKey.Remove(sortedByKey[sortedByKey.Count - 2]);
-
-            string query = RestHelpers.BuildPostArgs(sortedByKey);
-
-            var request = new HuobiSyncWebRequest<T2>(kApiRoot, null, kPost, query, 10, kRetryCount);
-            request.ContentType = "application/x-www-form-urlencoded";
-
-            bool done = false;
-
-            T2 obj = default(T2);
-            DateTime now = DateTime.UtcNow;
-
-            if (m_sleepAfterCallSeconds > 0)
-            {
-                if (m_lastCalled.ContainsKey(method))
-                {
-                    TimeSpan deltaLast = now - m_lastCalled[method];
-
-                    int sleepMillis = (int) (m_sleepAfterCallSeconds*1000) - (int) deltaLast.TotalMilliseconds;
-
-                    if (sleepMillis > 0)
-                    {
-                        Console.WriteLine("Sleeping for " + sleepMillis + " method " + method);
-                        Thread.Sleep(sleepMillis);
-                    }
-                }
-            }
-
-            while (!done)
-            {
-                try
-                {
-                    obj = request.Send();
-                    done = true;
-                }
-                catch (HuobiException e)
-                {
-                    Console.WriteLine("Huobi error: " + e.m_error.code);
-                    if (e.m_error.code != 71)
-                    {
-                        throw;
-                    }
-                }
-            }
-
-            m_lastCalled[method] = now;
-
-            return obj;
+        /// <summary>
+        /// </summary>
+        /// <param name="amount"></param>
+        public virtual void ValidateAmount(decimal amount)
+        {
         }
 
         /// <summary>
@@ -317,7 +230,7 @@ namespace HuobiApi
         /// <param name="secret_key"></param>
         /// <param name="input"></param>
         /// <returns></returns>
-        private string MD5(string input)
+        protected string MD5(string input)
         {
             byte[] asciiBytes = Encoding.ASCII.GetBytes(input);
             byte[] hashedBytes = System.Security.Cryptography.MD5.Create().ComputeHash(asciiBytes);
