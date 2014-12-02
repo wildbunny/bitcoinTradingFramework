@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{07135EFC-81DC-41F9-A413-E79854C7C7D6}</ProjectGuid>
+    <ProjectGuid>{266935B5-B5B2-462C-8308-20E2BD1360B5}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>HuobiApi</RootNamespace>
-    <AssemblyName>HuobiApi</AssemblyName>
+    <RootNamespace>BtcE</RootNamespace>
+    <AssemblyName>BtceApi</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -21,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -30,20 +31,12 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Mono|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\Mono\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
-    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
-    <CodeAnalysisFailOnMissingRules>false</CodeAnalysisFailOnMissingRules>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|X64'">
+    <PlatformTarget>x86</PlatformTarget>
+    <OutputPath>bin\Debug\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=4.0.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="Newtonsoft.Json">
       <HintPath>..\ThirdParty\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
@@ -56,17 +49,31 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Huobi.cs" />
-    <Compile Include="Assert.cs" />
-    <Compile Include="HuobiSyncWebRequest.cs" />
-    <Compile Include="HuobiTypes.cs" />
-    <Compile Include="IMarket.cs" />
-    <Compile Include="MarketBase.cs" />
-    <Compile Include="Numerical.cs" />
+    <Compile Include="BtceApi.cs" />
+    <Compile Include="BtceCurrency.cs" />
+    <Compile Include="BTCeMarket.cs" />
+    <Compile Include="BtcePair.cs" />
+    <Compile Include="CancelOrderAnswer.cs" />
+    <Compile Include="Depth.cs" />
+    <Compile Include="Funds.cs" />
+    <Compile Include="OrderList.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RestHelpers.cs" />
-    <Compile Include="SynchronousJsonWebRequest.cs" />
+    <Compile Include="Ticker.cs" />
+    <Compile Include="TradeInfo.cs" />
+    <Compile Include="TradeInfoType.cs" />
+    <Compile Include="UserInfo.cs" />
+    <Compile Include="Rights.cs" />
+    <Compile Include="TradeAnswer.cs" />
+    <Compile Include="TradeHistory.cs" />
+    <Compile Include="TradeType.cs" />
+    <Compile Include="TransHistory.cs" />
     <Compile Include="UnixTime.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\HuobiApi\HuobiApi.csproj">
+      <Project>{07135efc-81dc-41f9-a413-e79854c7c7d6}</Project>
+      <Name>HuobiApi</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -64,11 +64,16 @@
   <ItemGroup>
     <Compile Include="Algorithms\AlgoBase.cs" />
     <Compile Include="Algorithms\NaiveMarketMaker.cs" />
+    <Compile Include="MarketAccess.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rendering.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\BtceApi\BtceApi.csproj">
+      <Project>{266935b5-b5b2-462c-8308-20e2bd1360b5}</Project>
+      <Name>BtceApi</Name>
+    </ProjectReference>
     <ProjectReference Include="..\HuobiApi\HuobiApi.csproj">
       <Project>{07135EFC-81DC-41F9-A413-E79854C7C7D6}</Project>
       <Name>HuobiApi</Name>

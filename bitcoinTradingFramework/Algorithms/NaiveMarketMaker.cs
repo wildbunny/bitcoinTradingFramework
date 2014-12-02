@@ -12,7 +12,7 @@ namespace bitcoinTradingFramework.Algorithms
         /// <param name="huobi"></param>
         /// <param name="market"></param>
         /// <param name="renderer"></param>
-        public NaiveMarketMaker(Huobi huobi, HuobiMarket market, Rendering renderer) : base(huobi, market, renderer)
+        public NaiveMarketMaker(IMarket huobi, HuobiMarket market, Rendering renderer) : base(huobi, market, renderer)
         {
         }
 
@@ -31,11 +31,11 @@ namespace bitcoinTradingFramework.Algorithms
 
             CalculateProfit(now, midPrice, info);
 
-            decimal buyPrice = Huobi.NormalisePrice(summary.GetBidPrice(0));
-            decimal sellPrice = Huobi.NormalisePrice(summary.GetAskPrice(0));
+            decimal buyPrice = MarketBase.NormalisePrice(summary.GetBidPrice(0));
+            decimal sellPrice = MarketBase.NormalisePrice(summary.GetAskPrice(0));
 
-            decimal amountCanBuy = Huobi.NormaliseAmount(info.available_cny_display/buyPrice);
-            decimal amountCanSell = Huobi.NormaliseAmount(info.available_btc_display);
+            decimal amountCanBuy = MarketBase.NormaliseAmount(info.available_cny_display / buyPrice);
+            decimal amountCanSell = MarketBase.NormaliseAmount(info.available_btc_display);
 
             bool canBuy = amountCanBuy >= Huobi.kMinAmount;
             bool canSell = amountCanSell >= Huobi.kMinAmount;

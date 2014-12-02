@@ -10,7 +10,7 @@ namespace bitcoinTradingFramework.Algorithms
 	public class AlgoBase
 	{
 		protected List<HuobiOrder> m_lastOpenOrders;
-		protected Huobi m_huobi;
+        protected IMarket m_huobi;
 		protected HuobiMarket m_market;
 		protected Rendering m_renderer;
 		protected HuobiAccountInfo m_startInfo;
@@ -21,7 +21,7 @@ namespace bitcoinTradingFramework.Algorithms
 		/// <param name="huobi"></param>
 		/// <param name="market"></param>
 		/// <param name="renderer"></param>
-		public AlgoBase(Huobi huobi, HuobiMarket market, Rendering renderer)
+        public AlgoBase(IMarket huobi, HuobiMarket market, Rendering renderer)
 		{
 			m_huobi = huobi;
 			m_market = market;

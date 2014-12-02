@@ -1,25 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
-
+using BtcE;
 using HuobiApi;
 
 using Newtonsoft;
 
 using bitcoinTradingFramework.Algorithms;
+using Newtonsoft.Json;
 
 namespace bitcoinTradingFramework
 {
-	class Program
+    class Program
 	{
-		static void Main(string[] args)
+		static void Main()
 		{
 			// attach graph renderer
 			Rendering renderer = new Rendering(800, 400);
-			long lastTradeId = -1;
-			Huobi huobi = new Huobi(Insert your access key here, Insert your secret key here);
+            long lastTradeId = -1;
+
+		    var marketAccesses =
+                JsonConvert.DeserializeObject<List<MarketAccess>>(File.ReadAllText("accessKeys.txt"));
+
+		    var huobiAccess = marketAccesses.First(e => e.Name == "Huobi");
+		    var btceAccess = marketAccesses.First(e => e.Name == "BTCE");
+
+            IMarket huobi = new Huobi(huobiAccess.AccessKey, huobiAccess.SecretKey);
+            //huobi = new BTCeMarket(btceAccess.AccessKey, btceAccess.SecretKey);
+       
 			AlgoBase alogo = new NaiveMarketMaker(huobi, HuobiMarket.btc, renderer);
 			BcwTrade lastTrade = null;
 			TimeSpan timeOffset = new TimeSpan();
