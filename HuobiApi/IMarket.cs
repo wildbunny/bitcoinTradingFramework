@@ -6,6 +6,7 @@ namespace HuobiApi
     {
         HuobiOrderResult Buy(HuobiMarket coinType, decimal price, decimal amountBtc);
         HuobiSimpleResult CancelOrder(HuobiMarket coinType, uint uid);
+        void CancelAllOrders();
         HuobiAccountInfo GetAccountInfo();
         BcwMarketDepth GetDepth(BcwMarket market);
         DateTime GetHuobiTime();

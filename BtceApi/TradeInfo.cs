@@ -1,5 +1,4 @@
-﻿using BtcE.Utils;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using System;
 namespace BtcE
 {

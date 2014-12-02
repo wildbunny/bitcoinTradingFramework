@@ -67,6 +67,10 @@ namespace HuobiApi
         /// <returns></returns>
         public abstract DateTime GetHuobiTime();
 
+        public virtual void CancelAllOrders()
+        {
+        }
+
         /// <summary>
         /// </summary>
         /// <returns></returns>

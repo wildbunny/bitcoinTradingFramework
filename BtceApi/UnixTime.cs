@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BtcE.Utils
+namespace BtcE
 {
     public static class UnixTime
     {
