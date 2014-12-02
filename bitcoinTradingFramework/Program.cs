@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using BtcE;
 using HuobiApi;
 
 using Newtonsoft;
@@ -26,10 +25,12 @@ namespace bitcoinTradingFramework
                 JsonConvert.DeserializeObject<List<MarketAccess>>(File.ReadAllText("accessKeys.txt"));
 
 		    var huobiAccess = marketAccesses.First(e => e.Name == "Huobi");
-		    var btceAccess = marketAccesses.First(e => e.Name == "BTCE");
+            var btceAccess = marketAccesses.First(e => e.Name == "BTCE");
+            var cryptsyAccess = marketAccesses.First(e => e.Name == "Cryptsy");
 
             IMarket huobi = new Huobi(huobiAccess.AccessKey, huobiAccess.SecretKey);
             //huobi = new BTCeMarket(btceAccess.AccessKey, btceAccess.SecretKey);
+            //huobi = new CryptsyMarket(cryptsyAccess.AccessKey, cryptsyAccess.SecretKey);
        
 			AlgoBase alogo = new NaiveMarketMaker(huobi, HuobiMarket.btc, renderer);
 			BcwTrade lastTrade = null;

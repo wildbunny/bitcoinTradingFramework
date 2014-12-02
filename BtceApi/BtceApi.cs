@@ -4,7 +4,6 @@
  * 2012
  */
 
-using BtcE.Utils;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
