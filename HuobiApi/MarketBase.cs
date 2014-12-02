@@ -70,19 +70,13 @@ namespace HuobiApi
         /// <summary>
         /// </summary>
         /// <returns></returns>
-        public HuobiAccountInfo GetAccountInfo()
-        {
-            return Send<HuobiAccountInfo>("get_account_info");
-        }
+        public abstract HuobiAccountInfo GetAccountInfo();
 
         /// <summary>
         /// </summary>
         /// <param name="coinType"></param>
         /// <returns></returns>
-        public List<HuobiOrder> GetOpenOrders(HuobiMarket coinType)
-        {
-            return Send<List<HuobiOrder>>("get_orders", "coin_type", (int) coinType);
-        }
+        public abstract List<HuobiOrder> GetOpenOrders(HuobiMarket coinType);
 
         /// <summary>
         /// </summary>
@@ -94,8 +88,16 @@ namespace HuobiApi
         {
             ValidatePrice(price);
             ValidateAmount(amountBtc);
-            return Send<HuobiOrderResult>("buy", "coin_type", (int) coinType, "price", price, "amount", amountBtc);
+            return OnBuy(coinType, price, amountBtc);
         }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="coinType"></param>
+        /// <param name="price"></param>
+        /// <param name="amountBtc"></param>
+        /// <returns></returns>
+        public abstract HuobiOrderResult OnBuy(HuobiMarket coinType, decimal price, decimal amountBtc);
 
         /// <summary>
         /// </summary>
@@ -107,18 +109,17 @@ namespace HuobiApi
         {
             ValidatePrice(price);
             ValidateAmount(amountBtc);
-            return Send<HuobiOrderResult>("sell", "coin_type", (int) coinType, "price", price, "amount", amountBtc);
+            return OnSell(coinType, price, amountBtc);
         }
+
+        public abstract HuobiOrderResult OnSell(HuobiMarket coinType, decimal price, decimal amountBtc);
 
         /// <summary>
         /// </summary>
         /// <param name="coinType"></param>
         /// <param name="uid"></param>
         /// <returns></returns>
-        public HuobiSimpleResult CancelOrder(HuobiMarket coinType, uint uid)
-        {
-            return Send<HuobiSimpleResult>("cancel_order", "coin_type", (int) coinType, "id", uid);
-        }
+        public abstract HuobiSimpleResult CancelOrder(HuobiMarket coinType, uint uid);
 
         /// <summary>
         /// </summary>
@@ -137,7 +138,6 @@ namespace HuobiApi
         {
             return Numerical.TruncateDecimal(amount, 4);
         }
-
 
 
         /// <summary>
@@ -168,20 +168,6 @@ namespace HuobiApi
         /// <param name="amount"></param>
         public virtual void ValidateAmount(decimal amount)
         {
-        }
-
-        /// <summary>
-        /// </summary>
-        /// <param name="args"></param>
-        /// <returns></returns>
-        private string GetParamsString(object[] args)
-        {
-            string result = "";
-            foreach (object o in args)
-            {
-                result += o + ",";
-            }
-            return result.TrimEnd(',');
         }
 
         /// <summary>
