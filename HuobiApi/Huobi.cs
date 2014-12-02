@@ -110,6 +110,35 @@ namespace HuobiApi
             WildLog.Assert(amount >= kMinAmount, "Minimum tradable amount is " + kMinAmount);
         }
 
+        /// <summary>
+        /// </summary>
+        /// <param name="coinType"></param>
+        /// <returns></returns>
+        public override List<HuobiOrder> GetOpenOrders(HuobiMarket coinType)
+        {
+            return Send<List<HuobiOrder>>("get_orders", "coin_type", (int)coinType);
+        }
+
+        public override HuobiAccountInfo GetAccountInfo()
+        {
+            return Send<HuobiAccountInfo>("get_account_info");
+        }
+
+        public override HuobiOrderResult OnBuy(HuobiMarket coinType, decimal price, decimal amountBtc)
+        {
+            return Send<HuobiOrderResult>("buy", "coin_type", (int)coinType, "price", price, "amount", amountBtc);
+        }
+
+        public override HuobiOrderResult OnSell(HuobiMarket coinType, decimal price, decimal amountBtc)
+        {
+            return Send<HuobiOrderResult>("sell", "coin_type", (int)coinType, "price", price, "amount", amountBtc);
+        }
+
+        public override HuobiSimpleResult CancelOrder(HuobiMarket coinType, uint uid)
+        {
+            return Send<HuobiSimpleResult>("cancel_order", "coin_type", (int)coinType, "id", uid);
+        }
+
         public override DateTime GetHuobiTime()
         {
             DateTime time;
